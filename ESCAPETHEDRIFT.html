@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape the Drift</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #58a6ff;
+        }
+        .panel {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .option-btn {
+            display: block;
+            width: 100%;
+            background: #21262d;
+            color: #58a6ff;
+            border: 1px solid #30363d;
+            padding: 12px;
+            margin: 10px 0;
+            text-align: left;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: inherit;
+        }
+        .option-btn:hover {
+            background: #30363d;
+            border-color: #8b949e;
+        }
+        .status-bar {
+            font-size: 14px;
+            color: #8b949e;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .highlight {
+            color: #ffb703;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container"></div>
+
+    <script>
+        // Game State Variables
+        let state = {
+            level: 1,
+            node: 1,
+            glitched: false,
+            currentPassage: "Start"
+        };
+
+        // All Game Questions and Content
+        const story = {
+            "Start": {
+                title: "🚀 ESCAPE THE DRIFT: SYSTEM OVERRIDE",
+                text: "You are locked out of the spaceship's bridge by a glitched AI named C.O.S.M.O. Mainframe power is draining fast. You must manually override the terminal grid network to regain control.<br><br><span class='highlight'>The X-Factor Protection Protocol:</span> If you enter an incorrect answer, C.O.S.M.O's interface will glitch, providing an alternate backup puzzle of equal difficulty instead of initiating an immediate lockdown.",
+                options: [
+                    { text: "INITIALIZE MAIN CORE TERMINAL", next: "QuestionHandler" }
+                ]
+            },
+            
+            // LEVEL 1 PASSAGES
+            "L1_Q1": {
+                title: "SECTOR: LEVEL 1 (Engine Sync) | Node 1 of 5",
+                text: "🤖 C.O.S.M.O: \"Quantum hyperdrive matrix sequence corrupted! Analyze the pattern rule to solve the final telemetry exponent:<br><span class='highlight'>1^1, 2^4, 3^9, ?</span>\"",
+                options: [
+                    { text: "Option A: 4^16", next: "RightAnswer" },
+                    { text: "Option B: 4^12", next: "WrongAnswer" },
+                    { text: "Option C: 4^4", next: "WrongAnswer" },
+                    { text: "Option D: 4^8", next: "WrongAnswer" }
+                ]
+            },
+            "L1_Q1_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 1 | Node 1 of 5",
+                text: "🤖 C.O.S.M.O: \"Primary sequence link severed. Balancing engine stabilizer sequence instead:<br><span class='highlight'>5, 10, 20, 40, ?</span>\"",
+                options: [
+                    { text: "Option A: 50", next: "WrongAnswer" },
+                    { text: "Option B: 60", next: "WrongAnswer" },
+                    { text: "Option C: 80", next: "RightAnswer" },
+                    { text: "Option D: 100", next: "WrongAnswer" }
+                ]
+            },
+            "L1_Q2": {
+                title: "SECTOR: LEVEL 1 (Engine Sync) | Node 2 of 5",
+                text: "🤖 C.O.S.M.O: \"Plasma conduit divisibility check required. How many numbers are there between 1-100 that are divisible by both 2 and 5?\"",
+                options: [
+                    { text: "Option A: 10", next: "RightAnswer" },
+                    { text: "Option B: 11", next: "WrongAnswer" },
+                    { text: "Option C: 9", next: "WrongAnswer" },
+                    { text: "Option D: 12", next: "WrongAnswer" }
+                ]
+            },
+            "L1_Q2_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 1 | Node 2 of 5",
+                text: "🤖 C.O.S.M.O: \"Auxiliary track redirect: How many numbers between 1-50 are cleanly divisible by 5?\"",
+                options: [
+                    { text: "Option A: 10", next: "RightAnswer" },
+                    { text: "Option B: 9", next: "WrongAnswer" },
+                    { text: "Option C: 8", next: "WrongAnswer" },
+                    { text: "Option D: 11", next: "WrongAnswer" }
+                ]
+            },
+            "L1_Q3": {
+                title: "SECTOR: LEVEL 1 (Engine Sync) | Node 3 of 5",
+                text: "🤖 C.O.S.M.O: \"Security cylinder bypass active. A person is provided with a 3-digit number lock where only one combination is correct. Find the number of combinations which are incorrect.\"",
+                options: [
+                    { text: "Option A: 999", next: "RightAnswer" },
+                    { text: "Option B: 1000", next: "WrongAnswer" },
+                    { text: "Option C: 990", next: "WrongAnswer" },
+                    { text: "Option D: 900", next: "WrongAnswer" }
+                ]
+            },
+            "L1_Q3_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 1 | Node 3 of 5",
+                text: "🤖 C.O.S.M.O: \"Bypass matrix glitched. A basic airlock security lock has a 2-digit code (00-99). Only one opens it. How many fail?\"",
+                options: [
+                    { text: "Option A: 99", next: "RightAnswer" },
+                    { text: "Option B: 100", next: "WrongAnswer" },
+                    { text: "Option C: 98", next: "WrongAnswer" },
+                    { text: "Option D: 90", next: "WrongAnswer" }
+                ]
+            },
+            "L1_Q4": {
+                title: "SECTOR: LEVEL 1 (Engine Sync) | Node 4 of 5",
+                text: "🤖 C.O.S.M.O: \"[MENTAL ABILITY] Interface display command panel inversion logic. Analyze the layout matrix sequence conversion rule below:<br><span class='highlight'>[▲●] -> [●▲]</span><br><span class='highlight'>[■♦] -> [♦■]</span><br><span class='highlight'>[★▼] -> ?</span>\"",
+                options: [
+                    { text: "Option A: [▼★]", next: "RightAnswer" },
+                    { text: "Option B: [★▼]", next: "WrongAnswer" },
+                    { text: "Option C: [▲▼]", next: "WrongAnswer" },
+                    { text: "Option D: [■★]", next: "WrongAnswer" }
+                ]
+            },
+            "L1_Q4_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 1 | Node 4 of 5",
+                text: "🤖 C.O.S.M.O: \"[MENTAL ABILITY] Analyze the logical reduction matrix pattern:<br><span class='highlight'>111 -> 3</span><br><span class='highlight'>222 -> 6</span><br><span class='highlight'>333 -> ?</span>\"",
+                options: [
+                    { text: "Option A: 7", next: "WrongAnswer" },
+                    { text: "Option B: 8", next: "WrongAnswer" },
+                    { text: "Option C: 9", next: "RightAnswer" },
+                    { text: "Option D: 12", next: "WrongAnswer" }
+                ]
+            },
+            "L1_Q5": {
+                title: "SECTOR: LEVEL 1 (Engine Sync) | Node 5 of 5",
+                text: "🤖 C.O.S.M.O: \"[MENTAL ABILITY] Life support semantic diagnostic analogy link:<br><span class='highlight'>Oxygen is to Human as Fuel is to _______.</span>\"",
+                options: [
+                    { text: "Option A: Thruster", next: "RightAnswer" },
+                    { text: "Option B: Void", next: "WrongAnswer" },
+                    { text: "Option C: Meteor", next: "WrongAnswer" },
+                    { text: "Option D: Astronaut", next: "WrongAnswer" }
+                ]
+            },
+            "L1_Q5_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 1 | Node 5 of 5",
+                text: "🤖 C.O.S.M.O: \"[MENTAL ABILITY] Earth is to Planet as Sun is to _______.\"",
+                options: [
+                    { text: "Option A: Galaxy", next: "WrongAnswer" },
+                    { text: "Option B: Star", next: "RightAnswer" },
+                    { text: "Option C: Moon", next: "WrongAnswer" },
+                    { text: "Option D: Orbit", next: "WrongAnswer" }
+                ]
+            },
+
+            // LEVEL 2 PASSAGES
+            "L2_Q1": {
+                title: "SECTOR: LEVEL 2 (Cargo Bay) | Node 1 of 5",
+                text: "🤖 C.O.S.M.O: \"Spatial storage alignment. How many cubes of side 2 cm are required to make a larger structural cube of side 4cm?\"",
+                options: [
+                    { text: "Option A: 16", next: "WrongAnswer" },
+                    { text: "Option B: 32", next: "WrongAnswer" },
+                    { text: "Option C: 8", next: "RightAnswer" },
+                    { text: "Option D: 4", next: "WrongAnswer" }
+                ]
+            },
+            "L2_Q1_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 2 | Node 1 of 5",
+                text: "🤖 C.O.S.M.O: \"Recalculating micro-crates: How many 1cm cubes make a 3cm cube?\"",
+                options: [
+                    { text: "Option A: 9", next: "WrongAnswer" },
+                    { text: "Option B: 27", next: "RightAnswer" },
+                    { text: "Option C: 6", next: "WrongAnswer" },
+                    { text: "Option D: 12", next: "WrongAnswer" }
+                ]
+            },
+            "L2_Q2": {
+                title: "SECTOR: LEVEL 2 (Cargo Bay) | Node 2 of 5",
+                text: "🤖 C.O.S.M.O: \"Debris field navigation probability. One of the modules detects a pathway with 10 possible outcomes (1,2,...10). What is the probability of not getting a multiple of 3?\"",
+                options: [
+                    { text: "Option A: 3/10", next: "WrongAnswer" },
+                    { text: "Option B: 7/10", next: "RightAnswer" },
+                    { text: "Option C: 5/10", next: "WrongAnswer" },
+                    { text: "Option D: 7/11", next: "WrongAnswer" }
+                ]
+            },
+            "L2_Q2_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 2 | Node 2 of 5",
+                text: "🤖 C.O.S.M.O: \"Roll a standard 6-sided die. What is the probability of NOT rolling a multiple of 3?\"",
+                options: [
+                    { text: "Option A: 1/3", next: "WrongAnswer" },
+                    { text: "Option B: 2/3", next: "RightAnswer" },
+                    { text: "Option C: 1/2", next: "WrongAnswer" },
+                    { text: "Option D: 5/6" , next: "WrongAnswer" }
+                ]
+            },
+            "L2_Q3": {
+                title: "SECTOR: LEVEL 2 (Cargo Bay) | Node 3 of 5",
+                text: "🤖 C.O.S.M.O: \"Mass balancing scale alignment. There are 5 bags that weigh consecutive whole numbers. Together, they weigh 245 kg. What is the middle bag weight?\"",
+                options: [
+                    { text: "Option A: 47", next: "WrongAnswer" },
+                    { text: "Option B: 48", next: "WrongAnswer" },
+                    { text: "Option C: 49", next: "RightAnswer" },
+                    { text: "Option D: 51", next: "WrongAnswer" }
+                ]
+            },
+            "L2_Q3_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 2 | Node 3 of 5",
+                text: "🤖 C.O.S.M.O: \"Hydraulics resetting. Recalibrating loads: 3 consecutive integers sum to 90. What is the middle integer?\"",
+                options: [
+                    { text: "Option A: 29", next: "WrongAnswer" },
+                    { text: "Option B: 30", next: "RightAnswer" },
+                    { text: "Option C: 31", next: "WrongAnswer" },
+                    { text: "Option D: 32", next: "WrongAnswer" }
+                ]
+            },
+            "L2_Q4": {
+                title: "SECTOR: LEVEL 2 (Cargo Bay) | Node 4 of 5",
+                text: "🤖 C.O.S.M.O: \"Rerouting power coupling metrics. Isolate the system condition vectors: a+b= 2 , b+c= 3, c+a = 1. Find the accurate calibration ratio of a:b:c.\"",
+                options: [
+                    { text: "Option A: 1:2:1", next: "WrongAnswer" },
+                    { text: "Option B: 0:2:1", next: "RightAnswer" },
+                    { text: "Option C: 2:3:1", next: "WrongAnswer" },
+                    { text: "Option D: 1:1:2", next: "WrongAnswer" }
+                ]
+            },
+            "L2_Q4_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 2 | Node 4 of 5",
+                text: "🤖 C.O.S.M.O: \"Isolating auxiliary parameters: If x + y = 5 and x - y = 1, find the ratio x : y.\"",
+                options: [
+                    { text: "Option A: 3:2", next: "RightAnswer" },
+                    { text: "Option B: 2:1", next: "WrongAnswer" },
+                    { text: "Option C: 1:2", next: "WrongAnswer" },
+                    { text: "Option D: 3:1", next: "WrongAnswer" }
+                ]
+            },
+            "L2_Q5": {
+                title: "SECTOR: LEVEL 2 (Cargo Bay) | Node 5 of 5",
+                text: "🤖 C.O.S.M.O: \"[MENTAL ABILITY] Alphanumeric tracking array. Decipher the pattern sequence on the telemetry tracking string to secure the door:<br><span class='highlight'>Z1, X2, V4, T8, ?</span>\"",
+                options: [
+                    { text: "Option A: R16", next: "RightAnswer" },
+                    { text: "Option B: S16", next: "WrongAnswer" },
+                    { text: "Option C: R12", next: "WrongAnswer" },
+                    { text: "Option D: P16", next: "WrongAnswer" }
+                ]
+            },
+            "L2_Q5_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 2 | Node 5 of 5",
+                text: "🤖 C.O.S.M.O: \"[MENTAL ABILITY] Complete the alternate engineering tracking sequence:<br><span class='highlight'>A20, C18, E16, G14, ?</span>\"",
+                options: [
+                    { text: "Option A: H12", next: "WrongAnswer" },
+                    { text: "Option B: I12", next: "RightAnswer" },
+                    { text: "Option C: I13", next: "WrongAnswer" },
+                    { text: "Option D: J12", next: "WrongAnswer" }
+                ]
+            },
+
+            // LEVEL 3 PASSAGES
+            "L3_Q1": {
+                title: "SECTOR: LEVEL 3 (The Bridge) | Node 1 of 5",
+                text: "🤖 C.O.S.M.O: \"Data capsule routing logs. There are 5 envelopes provided to a person and they have to put 3 letters in those envelopes. Find in how many ways they can put them.\"",
+                options: [
+                    { text: "Option A: 10", next: "WrongAnswer" },
+                    { text: "Option B: 60", next: "RightAnswer" },
+                    { text: "Option C: 125", next: "WrongAnswer" },
+                    { text: "Option D: 243", next: "WrongAnswer" }
+                ]
+            },
+            "L3_Q1_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 3 | Node 1 of 5",
+                text: "🤖 C.O.S.M.O: \"Database overflow protocol. 4 people enter an elevator. 3 distinct exit floors are available. How many total ways can they exit?\"",
+                options: [
+                    { text: "Option A: 64", next: "RightAnswer" },
+                    { text: "Option B: 81", next: "WrongAnswer" },
+                    { text: "Option C: 12", next: "WrongAnswer" },
+                    { text: "Option D: 24", next: "WrongAnswer" }
+                ]
+            },
+            "L3_Q2": {
+                title: "SECTOR: LEVEL 3 (The Bridge) | Node 2 of 5",
