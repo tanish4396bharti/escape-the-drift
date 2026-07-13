@@ -57,18 +57,16 @@
 </head>
 <body>
 
-    <div id="game-container"></div>
+    <div id="game-container">
+        </div>
 
     <script>
         // Game State Variables
-        let state = {
-            level: 1,
-            node: 1,
-            glitched: false,
-            currentPassage: "Start"
-        };
+        let level = 1;
+        let node = 1;
+        let glitched = false;
 
-        // All Game Questions and Content
+        // All Game Questions and Content Matrix
         const story = {
             "Start": {
                 title: "🚀 ESCAPE THE DRIFT: SYSTEM OVERRIDE",
@@ -305,3 +303,185 @@
             },
             "L3_Q2": {
                 title: "SECTOR: LEVEL 3 (The Bridge) | Node 2 of 5",
+                text: "🤖 C.O.S.M.O: \"Shield projector geometry conversion loop. The length of a diagonal of a square is 20cm. Now that square is converted into a circle with the same perimeter. Find the area of that circle.\"",
+                options: [
+                    { text: "Option A: 400/π cm²", next: "WrongAnswer" },
+                    { text: "Option B: 200/π cm²", next: "WrongAnswer" },
+                    { text: "Option C: 600/π cm²", next: "WrongAnswer" },
+                    { text: "Option D: 800/π cm²", next: "RightAnswer" }
+                ]
+            },
+            "L3_Q2_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 3 | Node 2 of 5",
+                text: "🤖 C.O.S.M.O: \"A circle with a radius of 7 cm has its wire unbent and reshaped into a square. Find the square's side length.\"",
+                options: [
+                    { text: "Option A: 11 cm", next: "RightAnswer" },
+                    { text: "Option B: 22 cm", next: "WrongAnswer" },
+                    { text: "Option C: 7 cm", next: "WrongAnswer" },
+                    { text: "Option D: 14 cm", next: "WrongAnswer" }
+                ]
+            },
+            "L3_Q3": {
+                title: "SECTOR: LEVEL 3 (The Bridge) | Node 3 of 5",
+                text: "🤖 C.O.S.M.O: \"Hyperdrive scaling breakthrough frequency. Which term of the GP: 2, 6, 18, … is 4374? (Hint: T = a × r^(n - 1))\"",
+                options: [
+                    { text: "Option A: 6th", next: "WrongAnswer" },
+                    { text: "Option B: 7th", next: "WrongAnswer" },
+                    { text: "Option C: 8th", next: "RightAnswer" },
+                    { text: "Option D: 9th", next: "WrongAnswer" }
+                ]
+            },
+            "L3_Q3_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 3 | Node 3 of 5",
+                text: "🤖 C.O.S.M.O: \"Which term of the GP sequence: 1, 2, 4, 8... matches the breakdown value of 128?\"",
+                options: [
+                    { text: "Option A: 6th", next: "WrongAnswer" },
+                    { text: "Option B: 7th", next: "WrongAnswer" },
+                    { text: "Option C: 8th", next: "RightAnswer" },
+                    { text: "Option D: 9th", next: "WrongAnswer" }
+                ]
+            },
+            "L3_Q4": {
+                title: "SECTOR: LEVEL 3 (The Bridge) | Node 4 of 5",
+                text: "🤖 C.O.S.M.O: \"[MENTAL ABILITY] Primary core security decryption sequence. If 'SPACESHIP' is coded as 'TQBDFTIPO', how is 'BRIDGE' coded?\"",
+                options: [
+                    { text: "Option A: CSJEHF", next: "RightAnswer" },
+                    { text: "Option B: CQJEHF", next: "WrongAnswer" },
+                    { text: "Option C: BSIDHF", next: "WrongAnswer" },
+                    { text: "Option D: ASHDGF", next: "WrongAnswer" }
+                ]
+            },
+            "L3_Q4_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 3 | Node 4 of 5",
+                text: "🤖 C.O.S.M.O: \"[MENTAL ABILITY] Cryptographic backup validation string: If 'COSMO' is coded as 'DPTNP', how is 'MATH' coded?\"",
+                options: [
+                    { text: "Option A: NBUI", next: "RightAnswer" },
+                    { text: "Option B: NBTG", next: "WrongAnswer" },
+                    { text: "Option C: OBUI", next: "WrongAnswer" },
+                    { text: "Option D: NAUI", next: "WrongAnswer" }
+                ]
+            },
+            "L3_Q5": {
+                title: "SECTOR: LEVEL 3 (The Bridge) | Node 5 of 5",
+                text: "🤖 C.O.S.M.O: \"[MENTAL ABILITY] Clock indicator geometry. The backup mainframe locks at exactly 3:00 PM. What is the angle between the hour and minute hands?\"",
+                options: [
+                    { text: "Option A: 45°", next: "WrongAnswer" },
+                    { text: "Option B: 60°", next: "WrongAnswer" },
+                    { text: "Option C: 90°", next: "RightAnswer" },
+                    { text: "Option D: 120°", next: "WrongAnswer" }
+                ]
+            },
+            "L3_Q5_Backup": {
+                title: "[GLITCH BACKUP] SECTOR: LEVEL 3 | Node 5 of 5",
+                text: "🤖 C.O.S.M.O: \"[MENTAL ABILITY] System geometry test: What is the exact angle between clock indicators at 6:00?\"",
+                options: [
+                    { text: "Option A: 90°", next: "WrongAnswer" },
+                    { text: "Option B: 180°", next: "RightAnswer" },
+                    { text: "Option C: 270°", next: "WrongAnswer" },
+                    { text: "Option D: 360°", next: "WrongAnswer" }
+                ]
+            },
+
+            "Victory": {
+                title: "🎉 MISSION ACCOMPLISHED!",
+                text: "All AI firewalls have been systematically purged. C.O.S.M.O has been safely forced into a hard firmware factory reset.<br><br>The bridge blast doors slide open, and control of the spaceship is fully restored to the crew!<br><br>Thank you for playing <strong>Escape the Drift</strong>!",
+                options: []
+            }
+        };
+
+        // Engine Routing Logics
+        function goTo(destination) {
+            if (destination === "QuestionHandler") {
+                let currentTarget = "L" + level + "_Q" + node;
+                if (glitched) { 
+                    currentTarget += "_Backup"; 
+                }
+                renderPassage(currentTarget);
+                return;
+            }
+
+            if (destination === "RightAnswer") {
+                glitched = false;
+                node += 1;
+                
+                if (node > 5) {
+                    node = 1;
+                    level += 1;
+                    
+                    if (level === 2) {
+                        renderIntermediate("🎉 GREAT JOB!", "Level 1 completely cleared. The engine grid is humming back to life!");
+                    } else if (level === 3) {
+                        renderIntermediate("🚀 FABULOUS!", "Level 2 bypassed. Cargo lifters are balanced and system pressure is steady!");
+                    } else {
+                        renderPassage("Victory");
+                    }
+                } else {
+                    goTo("QuestionHandler");
+                }
+                return;
+            }
+
+            if (destination === "WrongAnswer") {
+                if (!glitched) {
+                    glitched = true;
+                    renderIntermediate("⚠️ CRITICAL WARNING: INCORRECT TELEMETRY", "C.O.S.M.O mainframe has detected anomalies... System glitching...<br><br><strong>[X-FACTOR PROTOCOL BYPASS ACTIVATED]:</strong> Rerouting to an equal-difficulty sub-terminal to maintain console stability.", "INITIALIZE BACKUP BYPASS");
+                } else {
+                    node = 1;
+                    glitched = false;
+                    renderIntermediate("💥 SYSTEM LOCKDOWN", "Incorrect backup authorization sequence provided. C.O.S.M.O has completely locked down this section's grid nodes.<br><br>Resetting current level node array back to Checkpoint 1...", "RE-INITIALIZE PROTOCOLS");
+                }
+                return;
+            }
+
+            renderPassage(destination);
+        }
+
+        // DOM Render Tools
+        function renderPassage(passageKey) {
+            const data = story[passageKey];
+            const container = document.getElementById("game-container");
+            
+            let statusBar = `<div class='status-bar'>SYSTEM LOG // LEVEL: ${level} | NODE: ${node} | GLITCH MODE: ${glitched ? "ACTIVE" : "OFF"}</div>`;
+            if (passageKey === "Start" || passageKey === "Victory") { 
+                statusBar = ""; 
+            }
+
+            let optionsHtml = "";
+            if (data.options && data.options.length > 0) {
+                data.options.forEach(opt => {
+                    optionsHtml += `<button class="option-btn" onclick="goTo('${opt.next}')">${opt.text}</button>`;
+                });
+            }
+
+            container.innerHTML = `
+                ${statusBar}
+                <h2>${data.title}</h2>
+                <div class="panel">
+                    <p>${data.text}</p>
+                </div>
+                <div style="margin-top: 20px;">
+                    ${optionsHtml}
+                </div>
+            `;
+        }
+
+        function renderIntermediate(headline, content, btnText = "PROCEED") {
+            const container = document.getElementById("game-container");
+            container.innerHTML = `
+                <h2>${headline}</h2>
+                <div class="panel">
+                    <p>${content}</p>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button class="option-btn" onclick="goTo('QuestionHandler')">${btnText} &rarr;</button>
+                </div>
+            `;
+        }
+
+        // Auto-run on mount
+        window.onload = function() {
+            renderPassage("Start");
+        };
+    </script>
+</body>
+</html>
